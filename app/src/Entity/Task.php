@@ -30,7 +30,7 @@ class Task
     /**
      * @ORM\Column(type="datetime")
      */
-    private $creation_timeÑstamp;
+    private $creation_timestamp;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -71,14 +71,14 @@ class Task
         return $this;
     }
 
-    public function getCreationTimeÑstamp(): ?\DateTimeInterface
+    public function getCreationTimestamp(): ?\DateTimeInterface
     {
-        return $this->creation_timeÑstamp;
+        return $this->creation_timestamp;
     }
 
-    public function setCreationTimeÑstamp(\DateTimeInterface $creation_timeÑstamp): self
+    public function setCreationTimestamp(\DateTimeInterface $creation_timestamp): self
     {
-        $this->creation_timeÑstamp = $creation_timeÑstamp;
+        $this->creation_timestamp = $creation_timestamp;
 
         return $this;
     }
