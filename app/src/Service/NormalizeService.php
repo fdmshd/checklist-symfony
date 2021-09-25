@@ -28,7 +28,8 @@ class NormalizeService
         return $serializer->normalize($object, null, [
             'groups' => $groups['groups'],
             AbstractNormalizer::CALLBACKS => [
-                'date' => $this->datetimeFormat,
+                'creation_timestamp' => $this->datetimeFormat,
+                'completion_timestamp' => $this->datetimeFormat
             ],
         ]);
     }
