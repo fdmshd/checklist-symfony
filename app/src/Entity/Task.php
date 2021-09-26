@@ -5,7 +5,7 @@ namespace App\Entity;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-
+use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=TaskRepository::class)
  */
@@ -21,12 +21,22 @@ class Task
 
     /**
      * @ORM\Column(type="string", length=64)
+     * @Assert\Length(
+     *      min = 1,
+     *      max = 64,
+     *      minMessage = "title must be at least {{ limit }} character long",
+     *      maxMessage = "title cannot be longer than {{ limit }} characters"
+     * )
      * @Groups ("main")
      */
     private $title;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Length(
+     *      max =255,
+     *      maxMessage = "description cannot be longer than {{ limit }} characters"
+     * )
      * @Groups ("main")
      */
     private $description;

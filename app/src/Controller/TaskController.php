@@ -49,11 +49,14 @@ class TaskController extends AbstractController
         $task = $this->getDoctrine()
             ->getRepository(Task::class)
             ->find($id);
+        if (!$task) {
+            return new Response($this->json(['message' => "No task found for id $id"]), 404);
+        }
         return new Response($this->json(['data' => $task]), 200);
     }
 
     /**
-     * @Route("/tasks/create", name="create_task",methods={"POST"})
+     * @Route("/tasks", name="create_task",methods={"POST"})
      */
     public function createTask(Request $request, ValidatorInterface $validator, LoggerInterface $logger): Response
     {
@@ -67,13 +70,11 @@ class TaskController extends AbstractController
         $errors = $validator->validate($task);
         if (count($errors) > 0) {
             $errorsString = (string)$errors;
-            return new Response($errorsString);
+            return new Response($this->json(['message' => $errorsString]), 400);
         }
-
         $entityManager->persist($task);
         $entityManager->flush();
         $data = (new NormalizeService())->normalizeByGroup($task);
-
         return new Response($this->json(['message' => "task successfully created", 'data' => $data]), 201);
     }
 
@@ -86,14 +87,14 @@ class TaskController extends AbstractController
         $decodedRequest = json_decode($request->getContent());
         $task = $entityManager->getRepository(Task::class)->find($id);
         if (!$task) {
-            return new Response($this->json(['message' => "No task found for id .$id"]), 404);
+            return new Response($this->json(['message' => "No task found for id $id"]), 404);
         }
         $task->setTitle($decodedRequest->title);
         $task->setDescription($decodedRequest->description);
         $errors = $validator->validate($task);
         if (count($errors) > 0) {
             $errorsString = (string)$errors;
-            return new Response($errorsString);
+            return new Response($this->json(['message' => $errorsString]), 400);
         }
         $entityManager->flush();
         return new Response($this->json(['message' => "task successfully updated", 'data' => $task]), 200);
@@ -106,6 +107,9 @@ class TaskController extends AbstractController
     {
         $entityManager = $this->getDoctrine()->getManager();
         $task = $entityManager->getRepository(Task::class)->find($id);
+        if (!$task) {
+            return new Response($this->json(['message' => "No task found for id .$id"]), 404);
+        }
         $entityManager->remove($task);
         $entityManager->flush();
         return new Response($this->json(['message' => "task successfully removed"]), 200);
