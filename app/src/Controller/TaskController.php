@@ -23,7 +23,7 @@ class TaskController extends AbstractController
         $tasks = $this->getDoctrine()
             ->getRepository(Task::class)
             ->findAll();
-        return new Response($this->json(['data' => $tasks]), 200);
+        return $this->json(['data' => $tasks]);
     }
 
     /**
@@ -38,7 +38,7 @@ class TaskController extends AbstractController
             $task->setCompletionTimestamp(new DateTime());
         }
         $entityManager->flush();
-        return new Response($this->json(['message' => "completion mark successfully changed"]), 200);
+        return $this->json(['message' => "completion mark successfully changed",'data' => $task]);
     }
 
     /**
@@ -52,7 +52,7 @@ class TaskController extends AbstractController
         if (!$task) {
             return new Response($this->json(['message' => "No task found for id $id"]), 404);
         }
-        return new Response($this->json(['data' => $task]), 200);
+        return $this->json(['data' => $task]);
     }
 
     /**
@@ -75,7 +75,7 @@ class TaskController extends AbstractController
         $entityManager->persist($task);
         $entityManager->flush();
         $data = (new NormalizeService())->normalizeByGroup($task);
-        return new Response($this->json(['message' => "task successfully created", 'data' => $data]), 201);
+        return $this->json(['message' => "task successfully created", 'data' => $data]);
     }
 
     /**
@@ -97,7 +97,7 @@ class TaskController extends AbstractController
             return new Response($this->json(['message' => $errorsString]), 400);
         }
         $entityManager->flush();
-        return new Response($this->json(['message' => "task successfully updated", 'data' => $task]), 200);
+        return $this->json(['message' => "task successfully updated", 'data' => $task]);
     }
 
     /**
@@ -112,6 +112,6 @@ class TaskController extends AbstractController
         }
         $entityManager->remove($task);
         $entityManager->flush();
-        return new Response($this->json(['message' => "task successfully removed"]), 200);
+        return $this->json(['message' => "task successfully removed"]);
     }
 }
