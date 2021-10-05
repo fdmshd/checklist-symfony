@@ -33,6 +33,9 @@ class TaskController extends AbstractController
     {
         $entityManager = $this->getDoctrine()->getManager();
         $task = $entityManager->getRepository(Task::class)->find($id);
+        if (!$task) {
+            return new Response($this->json(['message' => "No task found for id $id"]), 404);
+        }
         $task->setIsDone(!$task->getIsDone());
         if ($task->getIsDone()) {
             $task->setCompletionTimestamp(new DateTime());

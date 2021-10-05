@@ -40,6 +40,14 @@ class TaskControllerTest extends WebTestCase
         $this->assertJsonStringEqualsJsonString($expectedJson, $responseJson);
     }
 
+    public function testGetNullTask(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/tasks/3');
+        $response = $client->getResponse();
+        $this->assertSame(404, $response->getStatusCode());
+    }
+
     public function testChangeCompletionMark(): void
     {
         $client = static::createClient();
@@ -49,6 +57,14 @@ class TaskControllerTest extends WebTestCase
         $responseJson = $response->getContent();
         $responseData = json_decode($responseJson);
         $this->assertTrue($responseData->data->isDone);
+    }
+
+    public function testChangeNullTaskCompletionMark(): void
+    {
+        $client = static::createClient();
+        $client->request('POST', '/tasks/3');
+        $response = $client->getResponse();
+        $this->assertSame(404, $response->getStatusCode());
     }
 
     public function testDeleteTask(): void
@@ -64,6 +80,14 @@ class TaskControllerTest extends WebTestCase
         $responseJson = $response->getContent();
         $responseData = json_decode($responseJson);
         $this->assertJsonStringEqualsJsonString($expectedJson, $responseJson);
+    }
+
+    public function testDeleteNullTask(): void
+    {
+        $client = static::createClient();
+        $client->request('DELETE', '/tasks/3');
+        $response = $client->getResponse();
+        $this->assertSame(404, $response->getStatusCode());
     }
 
     public function testUpdateTask(): void
@@ -89,6 +113,18 @@ class TaskControllerTest extends WebTestCase
         $this->assertJsonStringEqualsJsonString($expectedJson, $responseJson);
     }
 
+    public function testUpdateNullTask(): void
+    {
+        $body = array(
+            "title" => "updatedTestTitle1",
+            "description" => "testDescription1"
+        );
+        $client = static::createClient();
+        $client->request('PUT', '/tasks/3', [], [], [], json_encode($body));
+        $response = $client->getResponse();
+        $this->assertSame(404, $response->getStatusCode());
+    }
+
     public function testCreateTask(): void
     {
         $body = array(
@@ -104,6 +140,18 @@ class TaskControllerTest extends WebTestCase
         $this->assertSame($responseData->data->title, $body["title"]);
         $this->assertSame($responseData->data->description, $body["description"]);
         $this->assertSame($responseData->message, "task successfully created");
+    }
+
+    public function testCreateWrongDataTask(): void
+    {
+        $body = array(
+            "title" => "",
+            "description" => "createdTestDescription"
+        );
+        $client = static::createClient();
+        $client->request('POST', '/tasks', [], [], [], json_encode($body));
+        $response = $client->getResponse();
+        $this->assertSame(400, $response->getStatusCode());
     }
 
     private function getTask1(): array
