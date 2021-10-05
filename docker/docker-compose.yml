@@ -1,0 +1,55 @@
+version:  '3.7'
+
+services:
+  php_checklist:
+    container_name: php_checklist
+    build: dockerfile/php
+    restart: on-failure
+    expose:
+      - "9000"
+    volumes:
+      - ../app:/var/www/html
+      - ../app/vendor:/var/www/html/vendor
+    links:
+      - mysql_checklist
+
+  nginx_checklist:
+    container_name: nginx_checklist
+    image: nginx:latest
+    restart: on-failure
+    ports:
+      - "8000:80"
+    volumes:
+      - ../app:/var/www/html
+      - ./logs/nginx:/var/log/nginx
+      - ./config/nginx:/etc/nginx/conf.d
+    links:
+      - php_checklist
+
+  mysql_checklist:
+    container_name: mysql_checklist
+    image: mysql:5.7
+    restart: on-failure
+#    ports:
+#      - "3300:3306"
+    expose:
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_USER: ${DATABASE_USER}
+    volumes:
+      - ./db/comment:/var/lib/mysql
+
+  checklist_storage:
+    container_name: checklist_storage
+    image: motiv-eshop/app:latest
+    build: dockerfile/php
+    depends_on:
+      - mysql_checklist
+    volumes:
+      - ../app:/var/www/html
+      - ../app/vendor:/var/www/html/vendor
+    restart: on-failure
+    command: [ "php", "bin/console"]

@@ -38,7 +38,7 @@ class TaskController extends AbstractController
             $task->setCompletionTimestamp(new DateTime());
         }
         $entityManager->flush();
-        return $this->json(['message' => "completion mark successfully changed",'data' => $task]);
+        return $this->json(['message' => "completion mark successfully changed", 'data' => $task]);
     }
 
     /**
