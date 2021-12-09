@@ -1,0 +1,50 @@
+framework:
+    messenger:
+        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+        # failure_transport: failed
+
+        transports:
+            task_create_amqp:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                option:
+                    exchange:
+                        name: task_create
+                        type: fanout
+                    queues:
+                        task_add_q: ~
+            task_update_amqp:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                option:
+                    exchange:
+                        name: task_update
+                        type: fanout
+                    queues:
+                        task_update_q: ~
+            task_delete_amqp:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                option:
+                    exchange:
+                        name: task_delete
+                        type: fanout
+                    queues:
+                        task_delete_q: ~
+            task_complete_amqp:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                option:
+                    exchange:
+                        name: task_complete
+                        type: fanout
+                    queues:
+                        task_delete_q: ~
+            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            # async: '%env(MESSENGER_TRANSPORT_DSN)%'
+            # failed: 'doctrine://default?queue_name=failed'
+            # sync: 'sync://'
+
+        routing:
+            'App\Message\TaskCreateMessage': task_create_amqp
+            'App\Message\TaskUpdateMessage': task_update_amqp
+            'App\Message\TaskDeleteMessage': task_delete_amqp
+            'App\Message\TaskCompleteMessage': task_complete_amqp
+            # Route your messages to the transports
+            # 'App\Message\YourMessage': async
